@@ -132,6 +132,13 @@ class ImageTraverser(BaseImageTraverser):
                 break
 
         if has_blobs and not hasattr(aq_base(self.context), blobScalesAttr) \
+        
+        # XXX does not delete scales in __annotations__['plone.scale']
+        # accessed via @@images/image/teaser or @@images/hash.jpg
+        # XXX cleanup these image when image gets replaced!??
+        # XXX should be done in https://dev.plone.org/ticket/13791
+        # and https://github.com/plone/plone.scale/pull/4/files
+        if has_blobs and not hasattr(aq_base(self.context), blobScalesAttr) \
            and PAI_STORAGE_KEY in IAnnotations(self.context):
                 del IAnnotations(self.context)[PAI_STORAGE_KEY]
         return super(ImageTraverser, self).publishTraverse(request, name)

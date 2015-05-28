@@ -68,7 +68,9 @@
         <adapter factory=".at.CroppingUtilsArchetype" />
 
         <!-- Archetypes FIELDNAME_SCALE traverser adaptions -->
-        <adapter factory=".at.ImageTraverser" />
+        <!-- archetypes.multilingual 1.x updates images when articles get modified
+        which results in loosing the crop information - need to get that fixed -->
+        <!--adapter factory=".at.ImageTraverser" /-->
 
     </configure>
 
