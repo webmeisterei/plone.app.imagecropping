@@ -21,7 +21,8 @@ class RecreateCroppedScales(BrowserView):
 
     def __call__(self):
         catalog = getToolByName(self.context, 'portal_catalog')
-        croppables = (brain.getObject() for brain in catalog(object_provides=IImageCroppingMarker.__identifier__))
+        croppables = (brain.getObject() for brain in catalog(object_provides=IImageCroppingMarker.__identifier__,
+                                                             Language='all'))
         with_cropping_info = 0
         total = 0
         total_scales = 0
@@ -35,6 +36,14 @@ class RecreateCroppedScales(BrowserView):
             cropview = obj.restrictedTraverse('@@crop-image')
             utils = IImageCroppingUtils(obj)
             fieldnames = utils.image_field_names()
+
+            # remove all plone.scales to make sure no stale cropped imagescale is
+            # left. (somehow scales created by p.a.imagecropping do not get deleted
+            # when uploading a new image file - maybe because of the fake modification date)
+            # others should be handeled by https://github.com/plone/plone.scale/pull/4
+            if IAnnotations(self.context).has_key('plone.scale'):
+                del IAnnotations(self.context)['plone.scale']
+
             for field_scale, box in infos.iteritems():
                 for fieldname in fieldnames:
                     if field_scale.startswith(fieldname):
@@ -43,6 +52,8 @@ class RecreateCroppedScales(BrowserView):
                             field_scale, '/'.join(obj.getPhysicalPath())))
                         cropview._crop(fieldname, scalename, box)
                         total_scales += 1
+
+
 
 
         msg = "found {0} croppable objects ({1} with cropping info) and re-created {2} scales".format(
