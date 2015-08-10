@@ -131,8 +131,6 @@ class ImageTraverser(BaseImageTraverser):
                 has_blobs = True
                 break
 
-        if has_blobs and not hasattr(aq_base(self.context), blobScalesAttr) \
-        
         # XXX does not delete scales in __annotations__['plone.scale']
         # accessed via @@images/image/teaser or @@images/hash.jpg
         # XXX cleanup these image when image gets replaced!??
