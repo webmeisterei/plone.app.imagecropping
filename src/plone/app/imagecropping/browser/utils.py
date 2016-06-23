@@ -13,7 +13,7 @@ logger = logging.getLogger('plone.app.imagecropping')
 class RecreateCroppedScales(BrowserView):
     """Sometimes it can happen, that the cropped scale(s) of an imagefield
     get lost when editing it's content item (see #21 and #54)
-    
+
     This utility view searches for all items implementing IImageCroppingMarker
     and recreates cropped versions for all scales that have been manually
     cropped (having a `plone.app.imagecropping` annotation)
@@ -50,11 +50,13 @@ class RecreateCroppedScales(BrowserView):
                         scalename = field_scale.replace(fieldname + '_', '')
                         logger.info("recreate {0} for {1}".format(
                             field_scale, '/'.join(obj.getPhysicalPath())))
-                        cropview._crop(fieldname, scalename, box)
-                        total_scales += 1
-
-
-
+                        try:
+                            cropview._crop(fieldname, scalename, box)
+                            total_scales += 1
+                        except IOError, e:
+                            # image got deleted, but cropped scale present - recreate won't work
+                            logger.warn("Skipping invalid image file\n")
+                            logger.warn(str(e))
 
         msg = "found {0} croppable objects ({1} with cropping info) and re-created {2} scales".format(
             total, with_cropping_info, total_scales)
