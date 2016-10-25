@@ -63,7 +63,7 @@
         class=".utils.RecreateCroppedScales"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         name="recreate-cropscales"
-        permission="cmf.ManagePortal"
+        permission="plone.app.controlpanel.Overview"
         />
 
 </configure>
